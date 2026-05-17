@@ -1,0 +1,17 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/registry/server.schema.json",
+  "name": "ai.watchr/mcp",
+  "description": "Official MCP server for Watchr — competitive intelligence and brand monitoring. Exposes monitoring groups, tracked brands, validated insights, and sent reports to any MCP-compatible AI client. Read-only, OAuth authenticated.",
+  "repository": {
+    "url": "https://github.com/getwatchr/watchr-mcp",
+    "source": "github"
+  },
+  "homepage": "https://www.watchr.ai",
+  "version": "1.0.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.watchr.ai/mcp"
+    }
+  ]
+}
