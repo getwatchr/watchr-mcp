@@ -18,6 +18,7 @@ The server is hosted by Watchr. No local install, no Docker. Just point your cli
 - [What you can do with it](#what-you-can-do-with-it)
 - [Showcase](#showcase)
 - [Available tools](#available-tools)
+- [Insight response contract](#insight-response-contract)
 - [Getting started with Watchr](#getting-started-with-watchr)
 - [Authentication](#authentication)
   - [Option A. One-click OAuth](#option-a-one-click-oauth)
@@ -62,12 +63,22 @@ The server exposes six read-only tools:
 |---|---|
 | `list_monitoring_groups` | List all monitoring groups (watchlists) you have access to. Each group bundles one or more tracked brands and a custom qualifying prompt that defines what counts as relevant. |
 | `list_brands` | List the competitor brands tracked inside a monitoring group. Use this to resolve brand names before searching. |
-| `search_insights` | Search validated insights with filters (brand, date range, source type, free-text). Insights are the signals Watchr collected and qualified as relevant against the group's prompt. |
-| `get_insight` | Fetch the full body of a single insight by ID: source URL, original content, screenshots, qualifying rationale. |
+| `search_insights` | Search validated insights with filters (brand, date range, source type, free-text). Returns a compact list designed to decide which insights to open. |
+| `get_insight` | Fetch the full body of a single insight by ID: source URL, original content, screenshots, qualifying rationale, dates, and related items when available. |
 | `list_reports` | List reports that have been sent from a monitoring group. |
 | `get_report` | Fetch the full body of a single report: narrative, included insights, recipients, send date. |
 
 All endpoints are paginated and filterable. The server is read-only. It cannot create, edit, or delete anything in your Watchr workspace.
+
+## Insight response contract
+
+`search_insights` returns a compact discovery payload. Every item includes an `id`, a title, a factual summary, source and brand metadata, and an `effective_date`. The accompanying `date_type` says whether that effective date is the source publication date (`published`) or Watchr's detection date (`detected`). Website changes therefore remain safely dateable even when they have no publication date.
+
+The search response intentionally omits the original `description`, `qualification_analysis`, raw dates, and `related_items`. This keeps result pages small enough for an AI client to rank and shortlist without spending its context window on source text it may never use.
+
+When an item's title or summary is not clear enough, call `get_insight` with the returned `id` as `insight_id` before answering. `get_insight` provides the source description, qualification reasoning, published and detected dates, and any related validated insights. Consumers should not infer missing detail from the compact summary alone.
+
+Where available, `competitive_signal_id` identifies insights Watchr attached to the same competitive movement and can be used as a deduplication hint.
 
 ## Getting started with Watchr
 
