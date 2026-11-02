@@ -4,7 +4,7 @@
 
 [Watchr](https://www.watchr.ai) is a competitive intelligence and brand monitoring platform. It watches your competitors' websites, ads, social posts, news, and other sources, then qualifies each signal against a prompt you define, so what you see is *relevant* movement, not noise.
 
-This repository hosts the official **Model Context Protocol (MCP) server** for Watchr. It exposes your monitoring groups, tracked brands, validated insights, and sent reports to any MCP-compatible client. Read-only.
+This repository documents the official **Model Context Protocol (MCP) server** for Watchr. It exposes account-scoped data and controlled account workflows. API keys provide read access; authorized OAuth administrators can also configure watchlists, manage members, record feedback and manage account tags.
 
 The server is hosted by Watchr. No local install, no Docker. Just point your client at `https://mcp.watchr.ai/mcp` and authenticate. There are two paths, depending on your client:
 
@@ -57,7 +57,7 @@ This is the core loop. Watchr collects and qualifies. Your AI client reasons and
 
 ## Available tools
 
-The server exposes six read-only tools:
+The default endpoint exposes **37 tools**, including reads and writes. The dedicated ChatGPT profile exposes **62 tools**, with individually named configuration preview/apply actions. Runtime `tools/list` is the source of truth for arguments, schemas and permissions.
 
 | Tool | Purpose |
 |---|---|
@@ -67,8 +67,43 @@ The server exposes six read-only tools:
 | `get_insight` | Fetch the full body of a single insight by ID: source URL, original content, screenshots, qualifying rationale, dates, and related items when available. |
 | `list_reports` | List reports that have been sent from a monitoring group. |
 | `get_report` | Fetch the full body of a single report: narrative, included insights, recipients, send date. |
+| `get_workspace_context` | Read role, credential scopes, effective permissions and account limits. |
+| `list_watchr_documentation` | Discover product guides and supported capabilities. |
+| `get_watchr_guide` | Read a selected product guide. |
+| `get_monitoring_configuration` | Read brands, sources, goals, relevance and report settings. |
+| `diagnose_monitoring` | Read configuration diagnostics and recorded report counters when available. |
+| `preview_monitoring_changes` | Save a bounded configuration preview without applying it. |
+| `apply_monitoring_changes` | Apply the exact approved preview, rechecking permissions and entitlements. |
+| `get_operation_status` | Read operation progress, pending confirmation or partial failure. |
+| `set_report_email_delivery` | Preview the combined report-generation and email-delivery setting. |
+| `list_workspace_members` | Read account members and pending invitations. |
+| `invite_workspace_member` | Invite a member with an explicitly authorized role. |
+| `revoke_workspace_invitation` | Revoke an explicitly identified pending invitation. |
+| `update_workspace_member_role` | Change a member role, protecting the final administrator. |
+| `remove_workspace_member` | Remove member access and revoke corresponding connections. |
+| `list_insight_tags` | Read the account tag catalog, definitions and versions. |
+| `check_insight_tag` | Validate a proposed tag and expose overlap warnings without saving. |
+| `save_insight_tag` | Create, edit, archive or reactivate an account tag. |
+| `update_insight_tags` | Add, remove or replace tags on a bounded batch of insights. |
+| `get_insight_tags` | Read tags, manual exclusions and classification state for selected insights. |
+| `get_insight_tag_history` | Read the bounded tag correction and classification audit. |
+| `create_insight_tag_job` | Prepare an explicit classification job with IDs and budget limits. |
+| `run_insight_tag_job` | Advance a job by at most one external model call within its limits. |
+| `get_insight_tag_job` | Read job progress and reserved budget without running it. |
+| `list_watchr_skills` | Discover packaged methods and their resource files. |
+| `get_watchr_skill` | Read a packaged skill file. |
+| `search_signals` | Search watchlist-scoped topics and synchronize their changes. |
+| `get_signal` | Read a topic with paginated source and report references. |
+| `search_rejected_insights` | Search retained individual rejected sources and their reasons. |
+| `get_rejected_insight` | Read an accessible retained rejection with its original evidence. |
+| `record_insight_feedback` | Record an explicit relevance, homonym or duplicate judgment without hiding the source. |
+| `list_insight_feedback` | Read recorded judgments and their provenance. |
 
-All endpoints are paginated and filterable. The server is read-only. It cannot create, edit, or delete anything in your Watchr workspace.
+Collections support their documented pagination and filters. Configuration uses a persistent preview followed by explicit approval before application. Reads require `mcp:read`; configuration and tag writes additionally require `mcp:configure`; member administration requires `mcp:members:manage`. Current roles and permissions are checked server-side. API keys remain read-only.
+
+Previewing does not start collection, send emails or apply a change. Some apply actions launch external discovery or collection. Tag definitions do not reclassify history: classification jobs are explicit, bounded and budgeted, and preserve manual corrections by default. Recorded relevance feedback does not change qualification or perform replay.
+
+New MCP-created watchlists have report preparation and email delivery disabled by default. Those two effects share one setting; disabling it does not stop collection. Existing report preferences are preserved.
 
 ## Insight response contract
 
@@ -78,7 +113,7 @@ The search response intentionally omits the original `description`, `qualificati
 
 When an item's title or summary is not clear enough, call `get_insight` with the returned `id` as `insight_id` before answering. `get_insight` provides the source description, qualification reasoning, published and detected dates, and any related validated insights. Consumers should not infer missing detail from the compact summary alone.
 
-Where available, `competitive_signal_id` identifies insights Watchr attached to the same competitive movement and can be used as a deduplication hint.
+`search_signals` and `get_signal` expose watchlist-scoped topics, source relations and recorded report appearances. `competitive_signal_id` is a legacy shared grouping hint, not the authoritative topic identity. Historical report appearances may be unavailable when no structure was recorded. A stored snapshot timestamp is not proof of the actual screenshot capture time.
 
 ## Getting started with Watchr
 
@@ -91,22 +126,22 @@ You need a configured Watchr workspace before the MCP server has anything intere
    - Subscribe to the newsletters and press feeds you want pulled in
    - Add the pages you want Watchr to monitor for changes (pricing, changelog, careers, etc.)
    - Add social media profiles to scrape (LinkedIn, Facebook, Instagram)
-3. Wait for your first report. Watchr collects, qualifies, and assembles the first briefing automatically.
+3. Wait for the first collected insights. Report preparation and delivery depend on watchlist settings; requesting a chat recap does not enable scheduled reports.
 4. Connect the MCP server (see [Authentication](#authentication) and [Configuration](#configuration)) and start querying your insights from any AI client.
 
 ## Authentication
 
-The server endpoint is always `https://mcp.watchr.ai/mcp`. There are two ways to authenticate to it. Pick the one your client supports.
+The default endpoint is `https://mcp.watchr.ai/mcp`. The dedicated ChatGPT profile uses `https://mcp.watchr.ai/mcp/chatgpt`. There are two authentication methods, depending on the client.
 
 ### Option A. One-click OAuth
 
 Standard OAuth 2.1 with Dynamic Client Registration (RFC 7591) and PKCE. Your client self-registers, opens a browser window, you authorize Watchr access, and tokens are stored transparently by the client. No copy/paste, no manual rotation.
 
-Clients with confirmed OAuth support out of the box:
+OAuth clients can use the authorization flow above:
 
 - Claude Desktop
 - Claude Code
-- ChatGPT (Custom Connectors on Plus / Pro / Team / Enterprise)
+- ChatGPT, using its dedicated endpoint and the connector/plugin setup available to the account
 - Cursor (recent versions)
 
 If your client is in this list, jump straight to [OAuth clients](#oauth-clients). No key generation needed.
