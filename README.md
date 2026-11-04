@@ -19,6 +19,7 @@ The server is hosted by Watchr. No local install, no Docker. Just point your cli
 - [Showcase](#showcase)
 - [Available tools](#available-tools)
 - [Insight response contract](#insight-response-contract)
+- [Onboarding skill for Claude Code and Codex](#onboarding-skill-for-claude-code-and-codex)
 - [Getting started with Watchr](#getting-started-with-watchr)
 - [Authentication](#authentication)
   - [Option A. One-click OAuth](#option-a-one-click-oauth)
@@ -114,6 +115,16 @@ The search response intentionally omits the original `description`, `qualificati
 When an item's title or summary is not clear enough, call `get_insight` with the returned `id` as `insight_id` before answering. `get_insight` provides the source description, qualification reasoning, published and detected dates, and any related validated insights. Consumers should not infer missing detail from the compact summary alone.
 
 `search_signals` and `get_signal` expose watchlist-scoped topics, source relations and recorded report appearances. `competitive_signal_id` is a legacy shared grouping hint, not the authoritative topic identity. Historical report appearances may be unavailable when no structure was recorded. A stored snapshot timestamp is not proof of the actual screenshot capture time.
+
+## Onboarding skill for Claude Code and Codex
+
+The [Watchr onboarding skill](skills/watchr-onboarding/SKILL.md) helps an authorized assistant read your current setup, prepare a first watchlist or improve an existing one, show the exact preview, and verify the result after your approval. The skill and the MCP connection are separate: installing the skill does not grant access or change your account.
+
+To install it for one project, copy the entire `skills/watchr-onboarding/` directory from this repository to `.claude/skills/watchr-onboarding/` for Claude Code or `.agents/skills/watchr-onboarding/` for Codex. For a personal installation, use `~/.claude/skills/watchr-onboarding/` or `~/.agents/skills/watchr-onboarding/` respectively. Keep both `SKILL.md` and `agents/openai.yaml` together.
+
+Connect Claude Code with `claude mcp add --transport http watchr https://mcp.watchr.ai/mcp`, then authorize through `/mcp`. Connect Codex with `codex mcp add watchr --url https://mcp.watchr.ai/mcp/chatgpt`, then run `codex mcp login watchr`. Complete Watchr sign-in only in the browser. Once connected, ask your assistant to use the Watchr onboarding skill.
+
+The dedicated signup page for people starting without a Watchr account is still in development. Until it is available, the skill does not provide a signup URL or claim to complete that flow. Claude Code and Codex OAuth onboarding with a new empty account has not yet been validated end to end.
 
 ## Getting started with Watchr
 
