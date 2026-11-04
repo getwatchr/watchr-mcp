@@ -124,7 +124,7 @@ To install it for one project, copy the entire `skills/watchr-onboarding/` direc
 
 Connect Claude Code with `claude mcp add --transport http watchr https://mcp.watchr.ai/mcp`, then authorize through `/mcp`. Connect Codex with `codex mcp add watchr --url https://mcp.watchr.ai/mcp/chatgpt`, then run `codex mcp login watchr`. Complete Watchr sign-in only in the browser. Once connected, ask your assistant to use the Watchr onboarding skill.
 
-The dedicated signup page for people starting without a Watchr account is still in development. Until it is available, the skill does not provide a signup URL or claim to complete that flow. Claude Code and Codex OAuth onboarding with a new empty account has not yet been validated end to end.
+If you start in Claude Code or Codex without a Watchr account, begin the MCP OAuth connection in that client. The browser opens Watchr's dedicated agent signup page from the validated authorization request, then returns to consent after account creation. The trial begins when the account is created; no watchlist or report email is enabled by signup alone. A direct visit to the page has no OAuth state. Real Claude Code and Codex onboarding with a new empty account still needs end-to-end acceptance testing.
 
 ## Getting started with Watchr
 
