@@ -8,7 +8,7 @@ This repository documents the official **Model Context Protocol (MCP) server** f
 
 The server is hosted by Watchr. No local install, no Docker. Just point your client at `https://mcp.watchr.ai/mcp` and authenticate. There are two paths, depending on your client:
 
-- One-click OAuth for Claude (Desktop / Code), ChatGPT, Cursor and any other client supporting Dynamic Client Registration. Browser opens, you approve, done.
+- Browser OAuth for Claude (Desktop / Code), ChatGPT, Cursor and other compatible clients. Add the connector, sign in through the browser, and authorize access to your Watchr account.
 - Personal API key (generated in your Watchr workspace) for agentic frameworks and custom integrations where you embed the MCP into your own automation stack.
 
 ---
@@ -19,6 +19,7 @@ The server is hosted by Watchr. No local install, no Docker. Just point your cli
 - [Showcase](#showcase)
 - [Available tools](#available-tools)
 - [Insight response contract](#insight-response-contract)
+- [Claude plugin bundle](#claude-plugin-bundle)
 - [Onboarding skill for Claude Code and Codex](#onboarding-skill-for-claude-code-and-codex)
 - [Getting started with Watchr](#getting-started-with-watchr)
 - [Authentication](#authentication)
@@ -115,6 +116,10 @@ The search response intentionally omits the original `description`, `qualificati
 When an item's title or summary is not clear enough, call `get_insight` with the returned `id` as `insight_id` before answering. `get_insight` provides the source description, qualification reasoning, published and detected dates, and any related validated insights. Consumers should not infer missing detail from the compact summary alone.
 
 `search_signals` and `get_signal` expose watchlist-scoped topics, source relations and recorded report appearances. `competitive_signal_id` is a legacy shared grouping hint, not the authoritative topic identity. Historical report appearances may be unavailable when no structure was recorded. A stored snapshot timestamp is not proof of the actual screenshot capture time.
+
+## Claude plugin bundle
+
+The [Watchr plugin source](plugins/watchr/) packages the remote Watchr MCP connector and the onboarding skill for Claude. Adding the plugin does not sign you in or grant access to Watchr data; connect the included connector through browser OAuth with your own account. The skill guides watchlist setup and checks existing configuration before suggesting changes.
 
 ## Onboarding skill for Claude Code and Codex
 

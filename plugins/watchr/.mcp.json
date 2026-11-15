@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "watchr": {
+      "type": "http",
+      "url": "https://mcp.watchr.ai/mcp"
+    }
+  }
+}
