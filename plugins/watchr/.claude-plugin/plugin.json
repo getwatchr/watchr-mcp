@@ -1,5 +1,5 @@
 {
-  "name": "watchr",
+  "name": "watchr-competitive-intelligence",
   "displayName": "Watchr",
   "version": "1.0.0",
   "description": "Monitor competitors and explore sourced Watchr insights and reports in Claude, with guided watchlist setup and changes that require approval.",
@@ -7,5 +7,6 @@
     "name": "Watchr",
     "url": "https://www.watchr.ai"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "privacyPolicyUrl": "https://www.watchr.ai/legal"
 }
