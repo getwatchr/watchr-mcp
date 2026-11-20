@@ -1,8 +1,21 @@
 {
   "name": "watchr-competitive-intelligence",
   "displayName": "Watchr.ai",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Monitor competitors and explore sourced Watchr insights and reports in Claude, with guided watchlist setup and changes that require approval.",
+  "homepage": "https://www.watchr.ai",
+  "repository": "https://github.com/getwatchr/watchr-mcp",
+  "icon": "./.claude-plugin/icon.png",
+  "documentationUrl": "https://github.com/getwatchr/watchr-mcp",
+  "supportUrl": "https://github.com/getwatchr/watchr-mcp/issues",
+  "privacyPolicyUrl": "https://www.watchr.ai/legal",
+  "termsOfServiceUrl": "https://www.watchr.ai/terms",
+  "keywords": [
+    "competitive intelligence",
+    "competitor monitoring",
+    "brand monitoring",
+    "market intelligence"
+  ],
   "author": {
     "name": "Boris Rieunier",
     "url": "https://www.watchr.ai"
